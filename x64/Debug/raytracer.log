@@ -1,0 +1,17 @@
+﻿  directionalLight.cpp
+  light.cpp
+  main.cpp
+C:\Users\Dallin\source\repos\raytracer\raytracer\main.cpp(276,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dallin\source\repos\raytracer\raytracer\main.cpp(277,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dallin\source\repos\raytracer\raytracer\main.cpp(278,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  material.cpp
+  plane.cpp
+  primitive.cpp
+  ray.cpp
+  sphere.cpp
+  utilities.cpp
+  vec.cpp
+  Generating Code...
+  raytracer.vcxproj -> C:\Users\Dallin\source\repos\raytracer\x64\Debug\raytracer.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
