@@ -1,4 +1,3 @@
-#pragma once
 #include "material.h"
 #include <iostream>
 

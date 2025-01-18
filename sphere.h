@@ -3,6 +3,7 @@
 #include "material.h"
 #include "primitive.h"
 #include <vector>
+#include <cmath>
 
 class sphere
 {

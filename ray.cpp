@@ -1,4 +1,3 @@
-#pragma once
 #include "ray.h"
 #include "vec.h"
 
