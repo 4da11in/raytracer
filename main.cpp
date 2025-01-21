@@ -30,12 +30,6 @@ double units_width = 6;
 //double units_height = units_width * 9.0 / 16.0;
 double units_height = units_width;
 
-float randFloat(float range) {
-	if (rand() % 2 == 0)
-		return (rand() % 100) / (range * 100);
-	return -(rand() % 100) / (range * 100);
-}
-
 int main() {
 	// Setup file
 	std::ofstream output;
@@ -52,77 +46,41 @@ int main() {
 	gm(0.7, 0.5, 0.1, green, greenSpec, 64, 0), bm(0.9, 1.0, 0.1, blue, whiteSpec, 4, 0),
 	bm2(0.9, 0.9, 0.1, blue, whiteSpec, 32, 0), pm(0.7, 0.2, 0.1, purple, whiteSpec, 16, 0), 
 	refm(0.0, 0.1, 0.1, gray, whiteSpec, 10, 0.9);
-
-	sphere whiteSphere(0.5, 0, -0.15, 0.05, wm);
-	sphere redSphere(0.3, 0.0, -0.1, 0.08, rm);
-	sphere greenSphere(-0.6, 0, 0, 0.3, gm);
-	sphere blueSphere(0, -10000.5, 0, 10000, bm);
-	sphere purpleSphere(0, 0, 0, 0.4, pm);
-	sphere reflectiveSphere(0, 0.3, -1, 0.25, refm);
-	sphere reflectiveSphere2(0.1, -0.55, 0.25, 0.3, refm);
-
-	// plane blueTriangle(0.0, -0.7, -0.5,
-	// 	1.0, 0.4, -1.0,
-	// 	0.0, -0.7, -1.5,
-	// 	bm);
-	// plane blueTriangle2(0.3, -0.3, -0.4,
-	// 	0.0, 0.3, -0.1,
-	// 	-0.3, -0.3, 0.2,
-	// 	bm2);
-	// plane yellowTriangle(0.0, -0.7, -0.5,
-	// 	0.0, -0.7, -1.5,
-	// 	-1.0, 0.4, -1.0, ym);
-	// plane yellowTriangle2(-0.2, 0.1, 0.1,
-	// 	-0.2, -0.5, 0.2,
-	// 	-0.2, 0.1, -0.3, ym2);
-
-	// sphere s1(0.5, 0, -0.15, 0.05, wm);
-	// sphere s2(0.3, 0.0, -0.1, 0.08, rm);
-	// sphere s3(-0.6, 0, 0, 0.3, gm);
-	// sphere s4(0, -10000.5, 0, 10000, bm);
-	// sphere s5(0, 0, 0, 0.4, pm);
-	// sphere s6(0, 0.3, -1, 0.25, refm);
-	// plane t1(-1.0, 0.8, -0.5,
-	// 	0.25, -0.4, -2.0,
-	// 	-0.5, 0.5, -1.5,
-	// 	bm);
-	// plane t2(0.3, -0.3, -0.4,
-	// 	0.0, 0.3, -0.1,
-	// 	-0.3, -0.3, 0.2,
-	// 	bm2);
-	// plane t3(0.0, -0.7, -0.5,
-	// 	0.0, -0.7, -1.5,
-	// 	-1.0, 0.4, -1.0, ym);
-	// plane t4(-0.2, 0.1, 0.1,
-	// 	-0.2, -0.5, 0.2,
-	// 	-0.2, 0.1, -0.3, ym2);
+	
 	std::vector<sphere> spheres = {};
 	std::vector<plane> planes = {};
 	std::vector<material> mats = { rm, gm, bm, pm, wm, refm, ym };
-	int count = 50;
+	int count = 40;
 	for (int i = 0; i < count; i++) {
 		float x = sin(i * 72);
 		float y = sin(i * 36);
 		float z = -1.0/5.0*i;
 		plane p(-0.5+x, -0.2+y, 0.0+z,
 			-0.2+x, -0.2+y, 0.0+z,
-			-0.5+x, 0.2+y, -5+z, mats[i%mats.size()]);
+			-0.5+x, -0.2+y, -5+z, mats[i%mats.size()]);
 		planes.push_back(p);
 
-		sphere s(randFloat(2), randFloat(2), randFloat(2), randFloat(10), mats[i % mats.size()]);
+		sphere s(randFloat(1.0), randFloat(1.0), randFloat(0.5)-0.6, randFloat(0.05)+0.07, mats[i % mats.size()]);
 		spheres.push_back(s);
 	}
-
+	int samples = 1;
 	auto start_time = std::chrono::high_resolution_clock::now();
 	for (int i = pixels_height; i >=0 ; i--) {
 		for (int j = 0; j < pixels_width; j++) {
 			double x_percent = double(j) / double(pixels_width - 1);
 			double y_percent = double(i) / double(pixels_height - 1);
 			vec pixel(x_percent * units_width - units_width/2, y_percent * units_height - units_height/2, -4.4);
-			vec dir = pixel - cameraPosition;
-			dir = normalize(dir);
-			vec outColor = colorAtRay(ray(cameraPosition, dir), spheres, planes, 0, bgColor, mainlight, ambientLight);
-			output << outColor;
+			vec out_color(0, 0, 0);
+			for (int a = 0; a < samples; a++) {
+				for (int b = 0; b < samples; b++) {					
+					vec random_jitter(randFloat(0.01), randFloat(0.01));
+					vec dir = pixel - cameraPosition + random_jitter;
+					dir = normalize(dir);
+					out_color += colorAtRay(ray(cameraPosition, dir), spheres, planes, 0, bgColor, mainlight, ambientLight);
+				}
+			}
+			out_color /= samples*samples;
+			output << out_color;
 		}
 		std::cout << "Row: " << i << "\n";
 	}

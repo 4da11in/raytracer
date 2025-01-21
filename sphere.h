@@ -5,7 +5,7 @@
 #include <vector>
 #include <cmath>
 
-class sphere
+class sphere : public primitive
 {
 public:
 	sphere(double x, double y, double z, double radius, material& mat);

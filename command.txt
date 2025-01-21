@@ -1,0 +1,2 @@
+g++ -I "~/source/repos/raytracer/raytracer" *.cpp && ./a.exe
+g++ -I "~/source/repos/raytracer/raytracer" -pg -no-pie *.cpp && ./a.exe

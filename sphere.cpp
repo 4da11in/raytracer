@@ -1,9 +1,8 @@
 #include "sphere.h"
 
-sphere::sphere(double x, double y, double z, double radius, material& mat) : x(x), y(y), z(z), radius(radius), mat(mat), center(vec(x, y, z))
-{
+sphere::sphere(double x, double y, double z, double radius, material& mat) :
+	x(x), y(y), z(z), radius(radius), mat(mat), center(vec(x, y, z)), primitive(mat) {}
 
-}
 std::vector<vec> sphere::getIntersection(ray r) {
 	std::vector<vec> intersectionInfo;
 	vec sphereOffset = r.origin - center;

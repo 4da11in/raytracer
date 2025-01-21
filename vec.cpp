@@ -17,6 +17,13 @@ vec vec::operator+(vec v)
 {
     return vec(this->x+v.x, this->y+v.y, this->z+v.z);
 }
+vec& vec::operator+=(vec v)
+{
+    this->x += v.x;
+    this->y += v.y;
+    this->z += v.z;
+    return *this;
+}
 vec vec::operator-()
 {
     return vec(this->x* -1, this->y* -1, this->z * -1);
@@ -37,6 +44,14 @@ vec vec::cross(vec v) {
 vec vec::operator/(double s)
 {
     return vec(this->x / s, this->y / s, this->z / s);
+}
+
+vec& vec::operator/=(double s)
+{
+    this->x /= s;
+    this->y /= s;
+    this->z /= s;
+    return *this;
 }
 
 double vec::length()

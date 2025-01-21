@@ -115,7 +115,6 @@ vec colorAtRay(ray r, std::vector<sphere> spheres, std::vector<plane> planes, in
 					if (intersectionPoint.z >= zbuffer) {
 						// We've already tried all diffuse/specular options, so if this is in shadow, we don't care *which* shadow has the biggest z-index, so just return black
 						return vec(0, 0, 0);
-						zbuffer = intersectionPoint.z;
 					}
 				}
 			}
@@ -125,40 +124,63 @@ vec colorAtRay(ray r, std::vector<sphere> spheres, std::vector<plane> planes, in
 					if (spheres[j].getIntersection(toLight).size() > 0) {
 						if (intersectionPoint.z >= zbuffer) {
 							return vec(0, 0, 0);
-							zbuffer = intersectionPoint.z;
 						}
 					}
 				}
 			}
 		}
 	}
-	for (int i = 0; i < planes.size(); i++) {
-		std::vector<vec> intersectionInfo = planes[i].getIntersection(r);
+
+	std::vector<std::unique_ptr<primitive>> objects = {};
+	for (plane p : planes) {
+		objects.push_back(std::make_unique<plane>(p));
+	}
+	for (sphere s : spheres) {
+		objects.push_back(std::make_unique<sphere>(s));
+	}
+	// shadows onto planes
+	for (int i = 0; i < objects.size(); i++) {
+		std::vector<vec> intersectionInfo = objects[i]->getIntersection(r);
 		if (intersectionInfo.size() > 0) {
 			vec intersectionPoint = intersectionInfo[0];
 			ray toLight(intersectionPoint, directionalLight.direction);
-			// shadows from planes on this plane
-			for (int j = 0; j < planes.size(); j++) {
+			for (int j = 0; j < objects.size(); j++) {
 				if (i != j) {
-					if (planes[j].getIntersection(toLight).size() > 0) {
+					if (objects[j]->getIntersection(toLight).size() > 0) {
 						// In shadow
 						if (intersectionPoint.z >= zbuffer) {
 							return vec(0, 0, 0);
-							zbuffer = intersectionPoint.z;
 						}
-					}
-				}
-			}
-			// shadows from spheres on this plane
-			for (int j = 0; j < spheres.size(); j++) {
-				if (spheres[j].getIntersection(toLight).size() > 0) {
-					if (intersectionPoint.z >= zbuffer) {
-						return vec(0, 0, 0);
-						zbuffer = intersectionPoint.z;
 					}
 				}
 			}
 		}
 	}
+	// for (int i = 0; i < planes.size(); i++) {
+	// 	std::vector<vec> intersectionInfo = planes[i].getIntersection(r);
+	// 	if (intersectionInfo.size() > 0) {
+	// 		vec intersectionPoint = intersectionInfo[0];
+	// 		ray toLight(intersectionPoint, directionalLight.direction);
+	// 		// shadows from planes on this plane
+	// 		for (int j = 0; j < planes.size(); j++) {
+	// 			if (i != j) {
+	// 				if (planes[j].getIntersection(toLight).size() > 0) {
+	// 					// In shadow
+	// 					if (intersectionPoint.z >= zbuffer) {
+	// 						return vec(0, 0, 0);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 		// shadows from spheres on this plane
+	// 		for (int j = 0; j < spheres.size(); j++) {
+	// 			if (spheres[j].getIntersection(toLight).size() > 0) {
+	// 				if (intersectionPoint.z >= zbuffer) {
+	// 					return vec(0, 0, 0);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 	return outputColor;
 }

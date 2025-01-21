@@ -1,10 +1,8 @@
 #include "plane.h"
 #include "utilities.h"
 
-plane::plane(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3, material mat) : points({vec(x1, y1, z1), vec(x2, y2, z2) , vec(x3, y3, z3) }), mat(mat)
-{
-
-}
+plane::plane(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3, material mat) :
+	points({vec(x1, y1, z1), vec(x2, y2, z2) , vec(x3, y3, z3) }), mat(mat), primitive(mat) {}
 
 std::vector<vec> plane::getIntersection(ray r)
 {

@@ -30,3 +30,8 @@ double max(double a, double b)
     }
     return b;
 }
+
+float randFloat(float range) {
+    int random_int = rand();
+    return ((random_int % 200) - 100)/100.0 * range;
+}
