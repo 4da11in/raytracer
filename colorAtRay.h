@@ -9,4 +9,4 @@
 #include "directionalLight.h"
 #include "utilities.h"
 
-vec colorAtRay(ray r, std::vector<sphere> spheres, std::vector<plane> planes, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight);
+vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight);

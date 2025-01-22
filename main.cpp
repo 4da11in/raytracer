@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <memory>
 #include <cmath>
 #include <chrono>
 
@@ -49,20 +50,33 @@ int main() {
 	
 	std::vector<sphere> spheres = {};
 	std::vector<plane> planes = {};
-	std::vector<material> mats = { rm, gm, bm, pm, wm, refm, ym };
-	int count = 40;
-	for (int i = 0; i < count; i++) {
-		float x = sin(i * 72);
-		float y = sin(i * 36);
-		float z = -1.0/5.0*i;
-		plane p(-0.5+x, -0.2+y, 0.0+z,
-			-0.2+x, -0.2+y, 0.0+z,
-			-0.5+x, -0.2+y, -5+z, mats[i%mats.size()]);
-		planes.push_back(p);
+	std::vector<material> mats = { rm, gm, bm, refm};
 
-		sphere s(randFloat(1.0), randFloat(1.0), randFloat(0.5)-0.6, randFloat(0.05)+0.07, mats[i % mats.size()]);
-		spheres.push_back(s);
+	std::vector<std::shared_ptr<primitive>> objects = {};
+
+	for (int i = 0; i < 4; i++) {
+		double x = double(i)/2.0-0.5;
+		double y = 0;
+		plane p(x-0.3, -0.2+y, -3,
+				x, -0.2+y, 0,
+				x+0.3, -0.2+y, -3,
+				mats[i%4]);
+		objects.push_back(std::make_shared<plane>(p));
+		sphere s(x, y+0.1, -2-0.1*i, 0.25, mats[(i+1)%4]);
+		objects.push_back(std::make_shared<sphere>(s));
 	}
+	plane p2(-1, 0.5, -0.5,
+			-0.5, -0.5, -0.5,
+			-1, 0.25, -4,
+			refm);
+	objects.push_back(std::make_shared<plane>(p2));
+	plane white_plane(
+		1, 0.1, -0.5,
+		1, 1, -4,
+		1.5, 0.1, -0.5,
+		pm);
+	objects.push_back(std::make_shared<plane>(white_plane));
+
 	int samples = 1;
 	auto start_time = std::chrono::high_resolution_clock::now();
 	for (int i = pixels_height; i >=0 ; i--) {
@@ -76,7 +90,7 @@ int main() {
 					vec random_jitter(randFloat(0.01), randFloat(0.01));
 					vec dir = pixel - cameraPosition + random_jitter;
 					dir = normalize(dir);
-					out_color += colorAtRay(ray(cameraPosition, dir), spheres, planes, 0, bgColor, mainlight, ambientLight);
+					out_color += colorAtRay(ray(cameraPosition, dir), objects, 0, bgColor, mainlight, ambientLight);
 				}
 			}
 			out_color /= samples*samples;

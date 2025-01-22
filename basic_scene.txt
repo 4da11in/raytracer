@@ -1,0 +1,6 @@
+plane p(-0.5, -0.2, 0.0,
+		0.5, -0.2, 0.0,
+		0, -0.2, -5, gm); // mats[i%mats.size()]
+	planes.push_back(p);
+	sphere s(0, 0, -2, 0.25, refm);
+	spheres.push_back(s);
