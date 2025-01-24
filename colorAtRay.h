@@ -7,6 +7,7 @@
 #include "sphere.h"
 #include "plane.h"
 #include "directionalLight.h"
+#include "pointLight.h"
 #include "utilities.h"
 
-vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight);
+vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight, pointLight pointLight);

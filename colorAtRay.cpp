@@ -1,53 +1,38 @@
 #include "colorAtRay.h"
 
-vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight) {
+vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight, pointLight pointLight) {
 	vec refColor = bgColor;
 	vec outputColor = colorize(bgColor);
 	double zbuffer = -999999999;
-
-	// std::vector<std::unique_ptr<primitive>> objects = {};
-	// for (plane p : planes) {
-	// 	objects.push_back(std::make_unique<plane>(p));
-	// }
-	// for (sphere s : spheres) {
-	// 	objects.push_back(std::make_unique<sphere>(s));
-	// }
 	
-	// Reflections or diffuse for all spheres
+	// Reflections and diffuse
 	for (int i = 0; i < objects.size(); i++) {
 		std::vector<vec> intersectionInfo = objects[i]->getIntersection(r);
 		if (intersectionInfo.size() > 0) {
 			vec intersectionPoint = intersectionInfo[0];
 			vec normal = intersectionInfo[1];
 			ray toLight(intersectionPoint, directionalLight.direction);
-
-			// Diffuse color
-			if (intersectionPoint.z > zbuffer) {
-				outputColor = objects[i]->mat.getColor(normal, directionalLight, ambientLight, -r.dir, refColor);
-				zbuffer = intersectionPoint.z;
-			}
-			// NOTE: reflections MUST precede shadows, otherwise shadowed areas may reflect
-			// 
-			// reflections from planes on this sphere
+			vec ptLightDir = pointLight.location - intersectionPoint;
+			// reflection ray
 			double eta = 0.0001;
 			vec reflectionOrigin = intersectionPoint + normal * eta;
 			vec reflectionDirection = r.dir - normal * 2 * r.dir.dot(normal);
 			ray reflectionRay(reflectionOrigin, reflectionDirection);
-			for (int j = 0; j < objects.size(); j++) {
-				if (i != j) {
-					std::vector<vec> refIntersectionInfo = objects[j]->getIntersection(reflectionRay);
-					if (bounceCount < 3 && refIntersectionInfo.size() > 0) {
-						//outputColor = vec(150, 0, 0);
-						vec refNormal = refIntersectionInfo[1];
-						if (intersectionPoint.z >= zbuffer) {
-							vec refColor = colorAtRay(reflectionRay, objects, bounceCount + 1, bgColor, directionalLight, ambientLight) * 1.0 / 255;
-							outputColor = objects[i]->mat.getColor(normal, directionalLight, ambientLight, -r.dir, refColor);
-							zbuffer = intersectionPoint.z;
-						}
-					}
-				}
-				
-			}			
+			// refraction ray
+			double ior = objects[i]->mat.ior;
+			vec refractionPerp = (r.dir)*1/ior;
+			vec refractionParallel = -normal*sqrt(1-refractionPerp.length()*refractionPerp.length());
+			vec refractionDirection = refractionParallel + refractionPerp;
+			ray refractionRay(intersectionPoint, refractionDirection);
+			
+			if (bounceCount < 3) {
+				if (intersectionPoint.z >= zbuffer) {
+					vec reflectionColor = colorAtRay(reflectionRay, objects, bounceCount + 1, bgColor, directionalLight, ambientLight, pointLight) * 1.0 / 255;
+					vec refractionColor = colorAtRay(refractionRay, objects, bounceCount + 1, bgColor, directionalLight, ambientLight, pointLight) * 1.0 / 255;
+					outputColor = objects[i]->mat.getColor(normal, directionalLight, ambientLight, pointLight, ptLightDir, -r.dir, reflectionColor, refractionColor);
+					zbuffer = intersectionPoint.z;
+				}				
+			}
 		}
 	}
 	// shadows
