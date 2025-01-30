@@ -2,7 +2,6 @@
 #include "light.h"
 #include "directionalLight.h"
 #include "pointLight.h"
-#include "utilities.h"
 
 #include <vector>
 #include <memory>

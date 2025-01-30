@@ -17,7 +17,7 @@ vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounc
 			// reflection ray
 			double eta = 0.0001;
 			vec reflectionOrigin = intersectionPoint + normal * eta;
-			vec reflectionDirection = r.dir - normal * 2 * r.dir.dot(normal);
+			vec reflectionDirection = r.dir - normal * 2 * dot(r.dir, normal);
 			ray reflectionRay(reflectionOrigin, reflectionDirection);
 			// refraction ray
 			double ior = objects[i]->mat.ior;
@@ -46,25 +46,37 @@ vec getColor(std::vector<vec> intersectionInfo, light ambientLight, std::vector<
 	viewDir = normalize(viewDir);
 	vec diffuse(0,0,0);
 	vec spec(0,0,0);
-	for (int i = 0; i < lights.size(); ++i) {
+	for (int i = 0; i < lights.size(); i++) {
 		std::shared_ptr<nonAmbientLight> light = lights[i];
-		vec direction = light->getDirection(intersectionPoint);
-		direction = normalize(direction);
-		// shadows: if point is occluded, exclude this light's contribution
-		bool occluded = false;
-		ray toLight(intersectionPoint, direction);
-		for (int j = 0; j < objects.size(); j++) {
-			if (j != objectIndex) {
-				if (objects[j]->getIntersection(toLight).size() > 0) {
-					occluded = true;
+		int samplesu = light->samplesu;
+		int samplesv = light->samplesv;
+		// std::cout << "samples: " << samplesu << " " << samplesv << '\n';
+		for (int sampleu = 0; sampleu < samplesu; sampleu++) {
+			for (int samplev = 0; samplev < samplesv; samplev++) {
+				vec direction = light->getDirection(intersectionPoint, sampleu, samplev);
+				vec randomJitter(randFloat(0.1), randFloat(0.1));
+				direction += randomJitter;
+				direction = normalize(direction);
+				// shadows: if point is occluded, exclude this light sample's contribution
+				bool occluded = false;
+				ray toLight(intersectionPoint, direction);
+				for (int j = 0; j < objects.size(); j++) {
+					if (j != objectIndex) {
+						if (objects[j]->getIntersection(toLight).size() > 0) {
+							occluded = true;
+						}
+					}			
 				}
-			}			
+				if (!occluded) {
+					diffuse += mat.od*mat.kd*light->intensity*max(dot(normalize(direction), normal), 0);
+					vec r = normal * dot(normal, normalize(direction))*2 - normalize(direction);
+					spec += light->color * light->intensity * mat.os * mat.ks * pow(max(dot(viewDir, r), 0), mat.kgls);
+				}
+			}
 		}
-		if (!occluded) {
-			diffuse += mat.od*mat.kd*light->intensity*max(dot(normalize(direction), normal), 0);
-			vec r = normal * dot(normal, normalize(direction))*2 - normalize(direction);
-			spec += light->color * light->intensity * mat.os * mat.ks * pow(max(dot(viewDir, r), 0), mat.kgls);
-		}		
+		int samples = samplesu*samplesv;
+		diffuse /= samples;
+		spec /= samples;
 	}
 
 	vec ambient = ambientLight.color * ambientLight.intensity * mat.ka * mat.od;
@@ -72,4 +84,27 @@ vec getColor(std::vector<vec> intersectionInfo, light ambientLight, std::vector<
 		refractionColor = refractionColor*0;
 	}
 	return colorize(diffuse+ambient+spec+reflectionColor*mat.reflectivity+refractionColor);
+}
+
+int clamp(int i, int max) {
+    if (i > max)
+    {
+        return max;
+    }
+    return i;
+}
+vec colorize(vec v)
+{
+    return vec(clamp(int(v.x * 254.999), 255), clamp(int(v.y * 254.999), 255), clamp(int(v.z * 254.999), 255));
+}
+double max(double a, double b)
+{
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+float randFloat(float range) {
+    int random_int = rand();
+    return ((random_int % 200) - 100)/100.0 * range;
 }

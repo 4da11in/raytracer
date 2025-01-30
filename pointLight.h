@@ -5,6 +5,6 @@ class pointLight : public nonAmbientLight
 	public:
 		pointLight(vec color, double intensity, vec location);
 		vec location;
-		vec getDirection(vec point);
+		vec getDirection(vec point, double sampleu, double samplev);
 };
 

@@ -13,13 +13,10 @@ class vec
 		vec(double u, double v);
         vec operator+(vec v);
         vec& operator+=(vec v);
-		vec operator-(vec v);
 		vec operator-();
-		vec operator*(vec v);
-		double dot(vec v);
-		vec cross(vec v);
-		vec operator/(vec v);
+		vec operator-(vec v);
 		vec operator*(double s);
+		vec operator*(vec v);
 		vec operator/(double s);
         vec& operator/=(double s);
 
@@ -28,3 +25,6 @@ class vec
 		friend std::ostream& operator<<(std::ostream& os, vec& vector);
 };
 
+double dot(vec v1, vec v2);
+vec cross(vec v1, vec v2);
+vec normalize(vec v);

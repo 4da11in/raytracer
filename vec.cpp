@@ -36,10 +36,9 @@ vec vec::operator*(double s)
 {
     return vec(this->x * s, this->y * s, this->z * s);
 }
-vec vec::cross(vec v) {
-    return vec(this->y * v.z - this->z * v.y,
-        this->z * v.x - this->x * v.z,
-        this->x * v.y - this->y * v.x);
+vec vec::operator*(vec v)
+{
+    return vec(this->x * v.x, this->y * v.y, this->z * v.z);
 }
 vec vec::operator/(double s)
 {
@@ -59,22 +58,23 @@ double vec::length()
     return std::sqrt(x*x + y*y + z*z);
 }
 
-vec vec::operator*(vec v)
-{
-    return vec(this->x * v.x, this->y * v.y, this->z * v.z);
-}
-
-double vec::dot(vec v)
-{
-    return v.x * this->x + v.y * this->y + v.z * this->z;
-}
-
-vec vec::operator/(vec v)
-{
-    return vec(this->x / v.x, this->y / v.y, this->z / v.z);
-}
-
 std::ostream& operator<<(std::ostream& out, vec& vector)
 {
     return out << vector.x << " " << vector.y << " " << vector.z << " ";
+}
+
+double dot(vec v1, vec v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+vec cross(vec v1, vec v2) {
+return vec(v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x);
+}
+
+vec normalize(vec v)
+{
+    return v / v.length();
 }

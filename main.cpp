@@ -11,6 +11,7 @@
 #include "planePrimitive.h"
 #include "colorAtRay.h"
 #include "scenes.h"
+#include "areaLight.h"
 
 // scene info
 vec bgColor(0.4, 0.4, 0.4);
@@ -22,16 +23,15 @@ int fov = 90;
 vec dirToLight(0.0, 1.0, 0.0);
 vec lightColor(1, 1, 1);
 directionalLight dirLight(lightColor, 0.5, dirToLight);
-pointLight ptLight(lightColor, 3, {0.1, 0, 0.2});
+pointLight ptLight(lightColor, 1, {0.1, 0, 0.2});
+areaLight arLight(0, 1, -2, {1,0,0}, {0,0,1}, 4, 4, {1,1,1}, 1);
 vec ambientLightColor(0.1, 0.1, 0.1);
 light ambientLight(ambientLightColor, 1);
 std::vector<std::shared_ptr<nonAmbientLight>> lights;
 
 int pixels_width = 400;
-//int pixels_height = static_cast<int>(pixels_width * 9 / 16);
 int pixels_height = pixels_width;
 double units_width = 6;
-//double units_height = units_width * 9.0 / 16.0;
 double units_height = units_width;
 
 int main() {
@@ -42,9 +42,9 @@ int main() {
 	output << pixels_width << ' ' <<  pixels_height << '\n' << 255 << '\n';
 	
 	// initialize non-ambient lights list
-	lights.push_back(std::make_shared<pointLight>(ptLight));
-	lights.push_back(std::make_shared<directionalLight>(dirLight));
-
+	// lights.push_back(std::make_shared<pointLight>(ptLight));
+	// lights.push_back(std::make_shared<directionalLight>(dirLight));
+	lights.push_back(std::make_shared<areaLight>(arLight));
 	// Rendering
 	std::vector<std::shared_ptr<primitive>> objects = scene1();
 	
