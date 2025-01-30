@@ -1,6 +1,6 @@
 #include "material.h"
 #include "sphere.h"
-#include "plane.h"
+#include "planePrimitive.h"
 
 #include <memory>
 

@@ -8,7 +8,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "material.h"
-#include "plane.h"
+#include "planePrimitive.h"
 #include "colorAtRay.h"
 #include "scenes.h"
 
@@ -21,10 +21,11 @@ int fov = 90;
 
 vec dirToLight(0.0, 1.0, 0.0);
 vec lightColor(1, 1, 1);
-directionalLight mainlight(lightColor, 0.5, dirToLight);
-pointLight ptLight(lightColor, 1, {0.1, 0.0, 0.2});
+directionalLight dirLight(lightColor, 0.5, dirToLight);
+pointLight ptLight(lightColor, 3, {0.1, 0, 0.2});
 vec ambientLightColor(0.1, 0.1, 0.1);
 light ambientLight(ambientLightColor, 1);
+std::vector<std::shared_ptr<nonAmbientLight>> lights;
 
 int pixels_width = 400;
 //int pixels_height = static_cast<int>(pixels_width * 9 / 16);
@@ -40,10 +41,14 @@ int main() {
 	output << "P3\n";
 	output << pixels_width << ' ' <<  pixels_height << '\n' << 255 << '\n';
 	
+	// initialize non-ambient lights list
+	lights.push_back(std::make_shared<pointLight>(ptLight));
+	lights.push_back(std::make_shared<directionalLight>(dirLight));
+
 	// Rendering
 	std::vector<std::shared_ptr<primitive>> objects = scene1();
 	
-	int samples = 6;
+	int samples = 3;
 	auto start_time = std::chrono::high_resolution_clock::now();
 	for (int i = pixels_height; i >=0 ; i--) {
 		for (int j = 0; j < pixels_width; j++) {
@@ -53,10 +58,8 @@ int main() {
 			vec out_color(0, 0, 0);
 			for (int a = 0; a < samples; a++) {
 				for (int b = 0; b < samples; b++) {					
-					vec random_jitter(randFloat(0.01), randFloat(0.01));
-					vec dir = pixel - cameraPosition + random_jitter;
-					dir = normalize(dir);
-					out_color += colorAtRay(ray(cameraPosition, dir), objects, 0, bgColor, mainlight, ambientLight, ptLight);
+					vec dir = pixel - cameraPosition;
+					out_color += colorAtRay(ray(cameraPosition, dir), objects, 0, bgColor, ambientLight, lights);
 				}
 			}
 			out_color /= samples*samples;

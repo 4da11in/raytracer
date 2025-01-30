@@ -5,9 +5,10 @@
 #include "vec.h"
 #include "ray.h"
 #include "sphere.h"
-#include "plane.h"
+#include "planePrimitive.h"
 #include "directionalLight.h"
 #include "pointLight.h"
 #include "utilities.h"
 
-vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, directionalLight directionalLight, light ambientLight, pointLight pointLight);
+vec colorAtRay(ray r, std::vector<std::shared_ptr<primitive>> objects, int bounceCount, vec bgColor, light ambientLight, std::vector<std::shared_ptr<nonAmbientLight>> lights);
+vec getColor(std::vector<vec> intersectionInfo, light ambientlight, std::vector<std::shared_ptr<nonAmbientLight>> lights, std::vector<std::shared_ptr<primitive>> objects, int objectIndex, vec viewpoint, vec reflectionColor, vec refractionColor={0,0,0});

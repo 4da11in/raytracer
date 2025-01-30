@@ -1,11 +1,12 @@
 #pragma once
-#include "light.h"
-class directionalLight
+#include "nonAmbientLight.h"
+class directionalLight : public nonAmbientLight
 {
 	public:
 		directionalLight(vec color, double intensity, vec direction);
 		vec direction;
-		vec color;
-		double intensity;
+		vec getDirection(vec point) {
+			return direction; // directional light ignores intersection point
+		};
 };
 

@@ -5,11 +5,10 @@
 #include "primitive.h"
 
 #include <vector>
-class plane : public primitive
+class plane
 {
 public:
-	plane(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3, material mat);
-	material mat;
+	plane(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3);
 	std::vector<vec> points;
 	std::vector<vec> getIntersection(ray r);
 };
