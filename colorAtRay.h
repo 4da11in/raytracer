@@ -5,7 +5,7 @@
 #include "vec.h"
 #include "ray.h"
 #include "sphere.h"
-#include "planePrimitive.h"
+#include "plane.h"
 #include "directionalLight.h"
 #include "pointLight.h"
 

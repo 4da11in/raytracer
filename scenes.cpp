@@ -11,7 +11,7 @@ std::vector<std::shared_ptr<primitive>> scene1()
 	refm(0.0, 0.1, 0.1, gray, whiteSpec, 10, 0.9);
 	
 	std::vector<sphere> spheres = {};
-	std::vector<planePrimitive> planes = {};
+	std::vector<plane> planes = {};
 	std::vector<material> mats = { rm, gm, bm, refm};
 	// mats = {refm, refm, refm, refm};
 
@@ -20,33 +20,33 @@ std::vector<std::shared_ptr<primitive>> scene1()
 	for (int i = 0; i < 4; i++) {
 		double x = double(i)/2.0-0.5;
 		double y = 0;
-		planePrimitive p(x-0.3, 0.0+y, -3,
+		plane p(x-0.3, 0.0+y, -3,
 				x, -0.2+y, 0,
 				x+0.3, 0.0+y, -3,
 				mats[i%4]);
-		objects.push_back(std::make_shared<planePrimitive>(p));
+		objects.push_back(std::make_shared<plane>(p));
 		sphere s(x, y+0.1, -2-0.1*i, 0.25, mats[(i+1)%4]);
 		objects.push_back(std::make_shared<sphere>(s));
 	}
-	planePrimitive p2(-1, 0.5, -0.5,
+	plane p2(-1, 0.5, -0.5,
 			-0.5, -0.5, -0.5,
 			-1, 0.25, -4,
 			refm);
-	objects.push_back(std::make_shared<planePrimitive>(p2));
-	planePrimitive white_plane(
+	objects.push_back(std::make_shared<plane>(p2));
+	plane white_plane(
 		1, 0.1, -0.5,
 		1, 1, -4,
 		1.5, 0.1, -0.5,
 		pm);
-	objects.push_back(std::make_shared<planePrimitive>(white_plane));
+	objects.push_back(std::make_shared<plane>(white_plane));
 
 	material refractiveMaterial(0.0, 0.5, 0.1, gray, whiteSpec, 30, 0.0, 1.5);
-	planePrimitive refractivePlane(
+	plane refractivePlane(
 		0.5, 0.1, -0.5,
 		0.15, -0.2, -0.0,
 		0.5, -0.2, -0.0,
 		refractiveMaterial);
-	objects.push_back(std::make_shared<planePrimitive>(refractivePlane));
+	objects.push_back(std::make_shared<plane>(refractivePlane));
 	sphere refractiveSphere(-0.15, 0.2, -1.0, 0.25, refractiveMaterial);
 	objects.push_back(std::make_shared<sphere>(refractiveSphere));
 	return objects;

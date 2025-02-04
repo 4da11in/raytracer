@@ -8,7 +8,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "material.h"
-#include "planePrimitive.h"
+#include "plane.h"
 #include "colorAtRay.h"
 #include "scenes.h"
 #include "areaLight.h"
