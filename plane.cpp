@@ -32,3 +32,20 @@ std::vector<vec> plane::getIntersection(ray r)
 	}
 	return intersectionInfo;
 }
+
+boundingBox plane::getBoundingBox()
+{
+	vec e1 = points[0];
+	vec e2 = points[0];
+	for (int i = 0; i < points.size(); i++) {
+		for (int dim = 0; dim < 3; dim++) {
+			if (points[i][dim] < e1[dim]) {
+				e1[dim] = points[i][dim];
+			}
+			if (points[i][dim] > e2[dim]) {
+				e2[dim] = points[i][dim];
+			}
+		}
+	}
+    return boundingBox(e1, e2);
+}

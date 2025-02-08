@@ -23,3 +23,10 @@ std::vector<vec> sphere::getIntersection(ray r) {
 	}
 	return intersectionInfo;
 }
+
+boundingBox sphere::getBoundingBox()
+{
+	vec e1(x-radius,y-radius,z-radius);
+	vec e2(x+radius,y+radius,z+radius);
+    return boundingBox(e1, e2);
+}

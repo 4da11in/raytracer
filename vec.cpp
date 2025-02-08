@@ -53,6 +53,17 @@ vec& vec::operator/=(double s)
     return *this;
 }
 
+double& vec::operator[](int i)
+{
+    if (i == 0)
+        return x;
+    if (i == 1)
+        return y;
+    if (i == 2)
+        return z;
+    throw std::runtime_error("invalid vector index");
+}
+
 double vec::length()
 {
     return std::sqrt(x*x + y*y + z*z);

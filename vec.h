@@ -11,6 +11,7 @@ class vec
 	    double z;
 		vec(double x, double y, double z);
 		vec(double u, double v);
+
         vec operator+(vec v);
         vec& operator+=(vec v);
 		vec operator-();
@@ -19,6 +20,7 @@ class vec
 		vec operator*(vec v);
 		vec operator/(double s);
         vec& operator/=(double s);
+		double& operator[](int i);
 
 		double length();
 
