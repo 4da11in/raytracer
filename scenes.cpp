@@ -12,7 +12,7 @@ std::vector<std::shared_ptr<primitive>> scene1()
 	
 	std::vector<sphere> spheres = {};
 	std::vector<plane> planes = {};
-	std::vector<material> mats = { rm, gm, bm, refm};
+	std::vector<material> mats = { rm, gm, bm, refm, ym2, pm, wm, refm};
 	// mats = {refm, refm, refm, refm};
 
 	std::vector<std::shared_ptr<primitive>> objects = {};
@@ -23,9 +23,9 @@ std::vector<std::shared_ptr<primitive>> scene1()
 		plane p(x-0.3, 0.0+y, -3,
 				x, -0.2+y, 0,
 				x+0.3, 0.0+y, -3,
-				mats[i%4]);
+				mats[i]);
 		objects.push_back(std::make_shared<plane>(p));
-		sphere s(x, y+0.1, -2-0.1*i, 0.25, mats[(i+1)%4]);
+		sphere s(x, y+0.1, -2-0.1*i, 0.25, mats[i+4]);
 		objects.push_back(std::make_shared<sphere>(s));
 	}
 	plane p2(-1, 0.5, -0.5,

@@ -2,7 +2,7 @@
 
 boundingVolumeHierarchy::boundingVolumeHierarchy(vec e1, vec e2) : intersectableBox(e1, e2) {}
 
-bool checkOverlaps(intersectableBox a, intersectableBox b) {
+bool boundingVolumeHierarchy::checkOverlaps(intersectableBox a, intersectableBox b) {
 	// std::cout << "checked bounds: " << a.e1 << a.e2 << b.e1 << b.e2 << '\n';
 	if (b.e1.x > a.e2.x || a.e1.x > b.e2.x ||
 		b.e1.y > a.e2.y || a.e1.y > b.e2.y ||

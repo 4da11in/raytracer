@@ -14,26 +14,37 @@ std::vector<vec> colorAtRay(ray r, boundingVolumeHierarchy bv, boundingVolumeHie
 		for (std::shared_ptr<boundingVolumeHierarchy> child : bv.boundingChildren) {
 			double volumeT = child->intersects(r);
 			// std::cout << "T: " << volumeT << ' ';
-			if (volumeT > 0) {
+			bool originInBox = r.origin.x > child->e1.x && r.origin.x < child->e2.x &&
+							r.origin.y > child->e1.y && r.origin.y < child->e2.y &&
+							r.origin.z > child->e1.z && r.origin.z < child->e2.z;
+			if (volumeT > 0 || originInBox) {
 				intersected.insert(std::pair<double, std::shared_ptr<boundingVolumeHierarchy>>(volumeT, child));
 			}
 		}
+		vec finalIntersectionPoint(0,0,0);
 		for (std::pair<double, std::shared_ptr<boundingVolumeHierarchy>> child : intersected) {
 			// std::cout << "INTERSECTED: " << child.first;
 			std::vector<vec> colorInfo = colorAtRay(r, *child.second, originalBVH, bounceCount, bgColor, ambientLight, lights, zbuffer);
-			double rayZ = colorInfo[1][0];
-			if (rayZ > zbuffer) {
-				zbuffer = rayZ;
+			vec intersectionPoint = colorInfo[1];
+			
+			bool pointInBox = intersectionPoint.x > child.second->e1.x && intersectionPoint.x < child.second->e2.x &&
+							intersectionPoint.y > child.second->e1.y && intersectionPoint.y < child.second->e2.y &&
+							intersectionPoint.z > child.second->e1.z && intersectionPoint.z < child.second->e2.z;
 				outputColor = colorInfo[0];
+				finalIntersectionPoint = intersectionPoint;
+			if (pointInBox) {
 				output.push_back(outputColor);
-				output.push_back(vec(zbuffer, zbuffer, zbuffer));
+				output.push_back(intersectionPoint);
 				return output;
-				// count++;
-			// }	
-			}
+			}				
 		}
+		
+		output.push_back(outputColor);
+		output.push_back(finalIntersectionPoint);
+		return output;
 	} else { // reached leaf of bvh, run intersections
 		std::vector<std::shared_ptr<primitive>> objects = bv.primChildren;
+		vec finalIntersectionPoint(0,0,0);
 		// Reflections and diffuse
 		for (int i = 0; i < objects.size(); i++) {
 			std::vector<vec> intersectionInfo = objects[i]->getIntersection(r);
@@ -73,14 +84,15 @@ std::vector<vec> colorAtRay(ray r, boundingVolumeHierarchy bv, boundingVolumeHie
 						}
 						outputColor = getColor(intersectionInfo, ambientLight, lights, objects, i, -r.dir, reflectionColor, refractionColor);
 						zbuffer = intersectionPoint.z;
+						finalIntersectionPoint = intersectionPoint;
 					}
 				}
 			}
 		}
+		output.push_back(outputColor);
+		output.push_back(finalIntersectionPoint);
+		return output;
 	}
-	output.push_back(outputColor);
-	output.push_back(vec(zbuffer, zbuffer, zbuffer));
-	return output;
 }
 std::vector<vec> rayCast(ray r, boundingVolumeHierarchy bv, int bounceCount, vec bgColor, light ambientLight, std::vector<std::shared_ptr<nonAmbientLight>> lights) {
 

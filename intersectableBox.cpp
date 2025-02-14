@@ -19,28 +19,28 @@ double intersectableBox::intersects(ray r) {
 			if (r.origin[dim] > e2[dim] || r.origin[dim] < e1[dim]) { // if outside bounds of planes, cannot intersect
 				return -1;
 			}
-			} else { // ray not parallel, compute intersections
-				double t1 = (e1[dim]-r.origin[dim])/r.dir[dim];
-				double t2 = (e2[dim]-r.origin[dim])/r.dir[dim];
-				if (t1 > t2) {
-					std::swap(t1, t2);
-				}
-				if (t1 > tNear) {
-					tNear = t1;
-				}
-				if (t2 < tFar) {
-					tFar = t2;
-				}
-				if (tNear > tFar) { // missed
-					return -1;
-				}
-				if (tFar < 0) { // behind
-					return -1;
-				}
-				if (tNear > tNearMax) {
-					tNearMax = tNear;
-				}
+		} else { // ray not parallel, compute intersections
+			double t1 = (e1[dim]-r.origin[dim])/r.dir[dim];
+			double t2 = (e2[dim]-r.origin[dim])/r.dir[dim];
+			if (t1 > t2) {
+				std::swap(t1, t2);
 			}
+			if (t1 > tNear) {
+				tNear = t1;
+			}
+			if (t2 < tFar) {
+				tFar = t2;
+			}
+			if (tNear > tFar) { // missed
+				return -1;
+			}
+			if (tFar < 0) { // behind
+				return -1;
+			}
+			if (tNear > tNearMax) {
+				tNearMax = tNear;
+			}
+		}
 	}	
 	return tNearMax;
 }

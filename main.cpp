@@ -47,7 +47,7 @@ int main() {
 	// lights.push_back(std::make_shared<directionalLight>(dirLight));
 	lights.push_back(std::make_shared<areaLight>(arLight));
 	
-	std::vector<std::shared_ptr<primitive>> objects = sceneBoundingVolumeDemo();
+	std::vector<std::shared_ptr<primitive>> objects = scene1();
 	boundingVolumeHierarchy bvh({0,0,0},{0,0,0});
 	// create bounding volume hierarchy
 	int id = 0;
@@ -65,13 +65,13 @@ int main() {
 			}
 		}
 	}
-	bvh.medianSplit(20, 2); // 20 5
-	std::cout << "\ntotal count: " << objects.size() << '\n';
-	std::cout << "e1/e2:" << bvh.e1 << " " << bvh.e2 << '\n';
+	bvh.medianSplit(2, 2); // 20 5
+	// std::cout << "\ntotal count: " << objects.size() << '\n';
+	// std::cout << "e1/e2:" << bvh.e1 << " " << bvh.e2 << '\n';
 	// std::cout << bvh << '\n';
 
 	// Rendering loop
-	int samples = 6;
+	int samples = 1;
 	auto start_time = std::chrono::high_resolution_clock::now();
 	for (int i = pixels_height; i >=0 ; i--) {
 		for (int j = 0; j < pixels_width; j++) {
